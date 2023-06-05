@@ -1,0 +1,10 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      - POSTGRES_USER=${TWITTER_DB_USERNAME}
+      - POSTGRES_PASSWORD=${TWITTER_DB_PASSWORD}
+      - POSTGRES_DB=${TWITTER_DB_NAME}
+    ports:
+      - '${TWITTER_DB_PORT}:5432'

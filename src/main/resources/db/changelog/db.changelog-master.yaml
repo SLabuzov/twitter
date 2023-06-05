@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: 0.0.1/changelog-create-twitter-schema.sql
+      relativeToChangelogFile: true
