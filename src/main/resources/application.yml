@@ -4,3 +4,8 @@ spring:
     username: ${TWITTER_DB_USERNAME}
     password: ${TWITTER_DB_PASSWORD}
     driverClassName: org.postgresql.Driver
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
