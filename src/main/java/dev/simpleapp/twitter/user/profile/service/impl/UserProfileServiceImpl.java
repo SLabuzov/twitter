@@ -3,6 +3,7 @@ package dev.simpleapp.twitter.user.profile.service.impl;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.profile.repository.UserProfileRepository;
 import dev.simpleapp.twitter.user.profile.service.UserProfileService;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,5 +36,10 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
 
         this.userProfileRepository.save(userProfile);
+    }
+
+    @Override
+    public Optional<UserProfile> findUserProfileById(long userProfileId) {
+        return this.userProfileRepository.findById(userProfileId);
     }
 }
