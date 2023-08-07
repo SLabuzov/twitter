@@ -4,6 +4,9 @@ spring:
     username: ${TWITTER_DB_USERNAME}
     password: ${TWITTER_DB_PASSWORD}
     driverClassName: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate.jdbc.time_zone: UTC
 logging:
   level:
     org:
