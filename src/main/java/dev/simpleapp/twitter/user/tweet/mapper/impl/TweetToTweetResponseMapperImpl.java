@@ -12,7 +12,8 @@ public class TweetToTweetResponseMapperImpl implements TweetToTweetResponseMappe
         return new TweetResponse(
                 model.getId(),
                 model.getMessage(),
-                model.getCreatedTimestamp()
+                model.getCreatedTimestamp(),
+                model.getModifiedTimestamp()
         );
     }
 }
