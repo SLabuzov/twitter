@@ -1,8 +1,10 @@
 package dev.simpleapp.twitter.user.tweet.service.impl;
 
+import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.repository.TweetRepository;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
+import java.util.Collection;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +35,10 @@ public class TweetServiceImpl implements TweetService {
     @Override
     public void deleteTweet(long tweetId) {
         this.tweetRepository.deleteById(tweetId);
+    }
+
+    @Override
+    public Collection<Tweet> findAllTweets(UserProfile owner) {
+        return this.tweetRepository.findAllByUserProfile(owner);
     }
 }
