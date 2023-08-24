@@ -4,6 +4,7 @@ import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import java.util.Collection;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 public interface TweetService {
     Tweet createTweet(Tweet tweet);
@@ -14,5 +15,5 @@ public interface TweetService {
 
     void deleteTweet(long tweetId);
 
-    Collection<Tweet> findAllTweets(UserProfile owner);
+    Collection<Tweet> findAllTweets(UserProfile owner, Pageable pageable);
 }
