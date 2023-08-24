@@ -6,6 +6,7 @@ import dev.simpleapp.twitter.user.tweet.repository.TweetRepository;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
 import java.util.Collection;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,7 +39,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public Collection<Tweet> findAllTweets(UserProfile owner) {
-        return this.tweetRepository.findAllByUserProfile(owner);
+    public Collection<Tweet> findAllTweets(UserProfile owner, Pageable pageable) {
+        return this.tweetRepository.findAllByUserProfile(owner, pageable);
     }
 }
