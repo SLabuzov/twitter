@@ -26,13 +26,6 @@ public class CurrentUserProfileApiServiceImpl
                 .orElseThrow(() -> new RuntimeException("Пользователь должен быть авторизован в системе"));
 
         return this.userProfileService
-                .findUserProfileById(currentUserApiModel.userAccountId())
-                .orElseThrow(() -> {
-                    String errorMessage = String.format(
-                            "Профиля пользователя с id = %d  всистеме не существует",
-                            currentUserApiModel.userAccountId()
-                    );
-                    return new RuntimeException(errorMessage);
-                });
+                .findUserProfileByIdRequired(currentUserApiModel.userAccountId());
     }
 }

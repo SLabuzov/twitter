@@ -39,7 +39,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public Optional<UserProfile> findUserProfileById(long userProfileId) {
-        return this.userProfileRepository.findById(userProfileId);
+    public UserProfile findUserProfileByIdRequired(long userProfileId) {
+        return this.userProfileRepository.findById(userProfileId)
+                .orElseThrow(() -> {
+            String errorMessage = String.format(
+                    "Профиля пользователя с id = %d  в системе не существует",
+                    userProfileId
+            );
+            return new RuntimeException(errorMessage);
+        });
     }
 }
