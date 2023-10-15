@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.security.service.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.security.model.UserAccount;
 import dev.simpleapp.twitter.security.repository.UserAccountRepository;
 import dev.simpleapp.twitter.security.service.UserAccountService;
@@ -20,7 +21,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         boolean isUsernameExists = this.userAccountRepository.existsByUsername(userAccount.getUsername());
 
         if (isUsernameExists) {
-            throw new RuntimeException("Account with this username already exists");
+            throw new TwitterException("Account with this username already exists");
         }
 
         this.userAccountRepository.save(userAccount);

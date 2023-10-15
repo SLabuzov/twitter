@@ -1,6 +1,6 @@
 package dev.simpleapp.twitter.user.subscription.mapper;
 
-import dev.simpleapp.twitter.security.mapper.Mapper;
+import dev.simpleapp.twitter.common.mapper.Mapper;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
 import dev.simpleapp.twitter.user.subscription.web.model.SubscribeRequest;
 

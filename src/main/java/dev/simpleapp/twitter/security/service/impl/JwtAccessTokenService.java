@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.security.service.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.security.service.AccessTokenService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -28,7 +29,7 @@ public class JwtAccessTokenService implements AccessTokenService {
                 .of(authentication.getPrincipal())
                 .filter(UserDetails.class::isInstance)
                 .map(UserDetails.class::cast)
-                .orElseThrow(() -> new RuntimeException("Не удалось сформировать объект UserDetails из объекта Authentication"));
+                .orElseThrow(() -> new TwitterException("Не удалось сформировать объект UserDetails из объекта Authentication"));
 
 
         List<String> roles = userDetails
