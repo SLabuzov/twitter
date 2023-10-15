@@ -1,9 +1,9 @@
 package dev.simpleapp.twitter.user.profile.service.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.profile.repository.UserProfileRepository;
 import dev.simpleapp.twitter.user.profile.service.UserProfileService;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +23,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                             "Профиль пользователя с Id = %d ранее уже был создан",
                             userProfile.getId()
                     );
-            throw new RuntimeException(errorMessage);
+            throw new TwitterException(errorMessage);
         }
 
         if (this.userProfileRepository.existsByNickname(userProfile.getNickname())) {
@@ -32,7 +32,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                             "Профиль пользователя с Nickname = %s ранее уже был создан",
                             userProfile.getNickname()
                     );
-            throw new RuntimeException(errorMessage);
+            throw new TwitterException(errorMessage);
         }
 
         this.userProfileRepository.save(userProfile);
@@ -42,11 +42,11 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfile findUserProfileByIdRequired(long userProfileId) {
         return this.userProfileRepository.findById(userProfileId)
                 .orElseThrow(() -> {
-            String errorMessage = String.format(
-                    "Профиля пользователя с id = %d  в системе не существует",
-                    userProfileId
-            );
-            return new RuntimeException(errorMessage);
-        });
+                    String errorMessage = String.format(
+                            "Профиля пользователя с id = %d  в системе не существует",
+                            userProfileId
+                    );
+                    return new TwitterException(errorMessage);
+                });
     }
 }

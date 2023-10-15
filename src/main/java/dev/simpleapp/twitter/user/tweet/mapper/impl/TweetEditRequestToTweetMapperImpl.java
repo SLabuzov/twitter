@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.tweet.mapper.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.user.tweet.mapper.TweetEditRequestToTweetMapper;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
@@ -21,7 +22,7 @@ public class TweetEditRequestToTweetMapperImpl implements TweetEditRequestToTwee
                 .findTweetById(request.id())
                 .orElseThrow(() -> {
                     String errorMessage = String.format("Твит с id = %d не существует", request.id());
-                    return new RuntimeException(errorMessage);
+                    return new TwitterException(errorMessage);
                 });
 
         currentTweet.setMessage(request.message());

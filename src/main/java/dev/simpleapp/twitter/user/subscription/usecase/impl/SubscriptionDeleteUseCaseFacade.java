@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.subscription.usecase.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.subscription.mapper.UnsubscribeRequestToSubscriptionMapper;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
@@ -28,7 +29,7 @@ public class SubscriptionDeleteUseCaseFacade implements SubscriptionDeleteUseCas
         UserProfile followed = subscription.getFollowed();
 
         if (follower.equals(followed)) {
-            throw new RuntimeException("Отписка от самого себя не имеет никакого смысла");
+            throw new TwitterException("Отписка от самого себя не имеет никакого смысла");
         }
 
         if(!this.subscriptionService.existsSubscription(subscription)) {
@@ -36,7 +37,7 @@ public class SubscriptionDeleteUseCaseFacade implements SubscriptionDeleteUseCas
                     "Вы не были подписаны на %s",
                     followed.getNickname()
             );
-            throw new RuntimeException(errorMessage);
+            throw new TwitterException(errorMessage);
         }
         this.subscriptionService.deleteSubscription(subscription);
     }

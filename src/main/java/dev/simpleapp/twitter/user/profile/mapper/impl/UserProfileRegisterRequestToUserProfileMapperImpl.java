@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.profile.mapper.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.security.api.service.IdentityApiService;
 import dev.simpleapp.twitter.user.profile.mapper.UserProfileRegisterRequestToUserProfileMapper;
@@ -22,7 +23,7 @@ public class UserProfileRegisterRequestToUserProfileMapperImpl
 
         CurrentUserApiModel currentUserApiModel = this.identityApiService
                 .currentUserAccount()
-                .orElseThrow(() -> new RuntimeException("Для создания профиля пользователь должен быть авторизован в системе"));
+                .orElseThrow(() -> new TwitterException("Для создания профиля пользователь должен быть авторизован в системе"));
 
         UserProfile userProfile = new UserProfile();
         userProfile.setId(currentUserApiModel.userAccountId());

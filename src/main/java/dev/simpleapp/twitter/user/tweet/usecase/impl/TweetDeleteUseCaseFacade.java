@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
+import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
@@ -29,7 +30,7 @@ public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
                 .map(Tweet::getUserProfile)
                 .orElseThrow(() -> {
                     String errorMessage = String.format("Твит с id = %d не существует", tweetId);
-                    return new RuntimeException(errorMessage);
+                    return new TwitterException(errorMessage);
                 });
 
         if (!actor.equals(owner)) {
@@ -38,7 +39,7 @@ public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
                     tweetId,
                     actor.getNickname()
             );
-            throw new RuntimeException(errorMessage);
+            throw new TwitterException(errorMessage);
         }
         this.tweetService.deleteTweet(tweetId);
     }

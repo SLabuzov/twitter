@@ -52,9 +52,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .oauth2ResourceServer((oauth2ResourceServer) ->
+                .oauth2ResourceServer(oauth2ResourceServer ->
                         oauth2ResourceServer
-                                .jwt((jwt) -> jwt.decoder(jwtDecoder()))
+                                .jwt(jwt -> jwt.decoder(jwtDecoder()))
                 );
 
         return http.build();
