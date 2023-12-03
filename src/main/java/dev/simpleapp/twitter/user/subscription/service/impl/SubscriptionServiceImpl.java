@@ -1,9 +1,12 @@
 package dev.simpleapp.twitter.user.subscription.service.impl;
 
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
+import dev.simpleapp.twitter.user.subscription.model.FollowerSubscription;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
 import dev.simpleapp.twitter.user.subscription.repository.SubscriptionRepository;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,5 +39,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         UserProfile followed = subscription.getFollowed();
 
         return this.subscriptionRepository.existsByFollowerAndFollowed(follower, followed);
+    }
+
+    @Override
+    public Page<FollowerSubscription> findAllFollowerSubscriptions(UserProfile author, Pageable pageable) {
+        return this.subscriptionRepository.findAllByFollowed(author, pageable);
     }
 }
