@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: load-famous-quotes
+      author: SergeyLabuzov
+      changes:
+        - loadData:
+            schemaName: public
+            tableName: famous_quotes
+            columns:
+              - column:
+                  name: quote
+                  type: VARCHAR
+            encoding: UTF-8
+            file: data/famous_quotes.csv
+            separator: ;
+            usePreparedStatements: true
+            relativeToChangelogFile: true
