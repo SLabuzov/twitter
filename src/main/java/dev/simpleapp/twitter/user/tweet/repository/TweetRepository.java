@@ -16,8 +16,7 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
                     FROM Tweet t
                     JOIN FETCH t.userProfile up
                     JOIN up.followers flws
-                    JOIN flws.follower flw
-                    WHERE flw.id = ?1
+                    WHERE flws.follower.id = ?1
             """)
     Page<Tweet> findAllFollowerTweets(long followerId, Pageable pageable);
 }
