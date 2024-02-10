@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: db.changelog-master.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 0.0.1/changelog-fill-generated-data.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 0.0.1/changelog-prepare-db-for-loading-tweets.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 0.0.1/changelog-load-famous-quotes.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: 0.0.1/changelog-load-tweets-to-db.sql
+      relativeToChangelogFile: true
