@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### ZED IDE ###
+.zed
+
+
+.env
