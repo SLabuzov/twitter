@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:tc:postgresql:13.3:///fakedb
+    url: jdbc:tc:postgresql:17-alpine:///fakedb
   jpa:
     open-in-view: false
     properties:
