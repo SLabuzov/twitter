@@ -1,4 +1,4 @@
-package dev.simpleapp.twitter.security.api.service.impl;
+package dev.simpleapp.twitter.security.service.impl;
 
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.security.api.service.IdentityApiService;
