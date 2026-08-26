@@ -1,12 +1,15 @@
 package dev.simpleapp.twitter.user.profile.web;
 
+import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.usecase.UserProfileFindCurrentUseCase;
 import dev.simpleapp.twitter.user.profile.usecase.UserProfileFindUseCase;
 import dev.simpleapp.twitter.user.profile.usecase.UserProfileRegisterUseCase;
+import dev.simpleapp.twitter.user.profile.usecase.model.UserProfileRegisterCommand;
+import dev.simpleapp.twitter.user.profile.usecase.model.UserProfilesFindQuery;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfilePageResponse;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileRegisterRequest;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileResponse;
-import dev.simpleapp.twitter.user.profile.web.model.UserProfilesFindRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,13 +39,21 @@ public class UserProfileController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerUserProfile(@Valid @RequestBody UserProfileRegisterRequest registerRequest) {
-        this.registerUseCase.registerUserProfile(registerRequest);
+    public void registerUserProfile(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                                    @Valid @RequestBody UserProfileRegisterRequest registerRequest) {
+
+        var command = new UserProfileRegisterCommand(
+                currentUserApiModel,
+                registerRequest.nickname(),
+                registerRequest.imageLink()
+        );
+
+        this.registerUseCase.registerUserProfile(command);
     }
 
     @GetMapping("/current")
-    public UserProfileResponse currentUserProfile() {
-        return this.findCurrentUseCase.currentUserProfile();
+    public UserProfileResponse currentUserProfile(@CurrentUser CurrentUserApiModel currentUserApiModel) {
+        return this.findCurrentUseCase.currentUserProfile(currentUserApiModel);
     }
 
     @GetMapping
@@ -51,7 +62,7 @@ public class UserProfileController {
             @RequestParam("limit") int limit,
             @RequestParam("name") String name
     ) {
-        UserProfilesFindRequest findRequest = new UserProfilesFindRequest(page, limit, name);
+        UserProfilesFindQuery findRequest = new UserProfilesFindQuery(page, limit, name);
         return this.findUseCase.findUserProfiles(findRequest);
     }
 }

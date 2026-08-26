@@ -1,34 +1,24 @@
 package dev.simpleapp.twitter.user.profile.mapper.impl;
 
-import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
-import dev.simpleapp.twitter.security.api.service.IdentityApiService;
-import dev.simpleapp.twitter.user.profile.mapper.UserProfileRegisterRequestToUserProfileMapper;
+import dev.simpleapp.twitter.user.profile.mapper.UserProfileRegisterCommandToUserProfileMapper;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
-import dev.simpleapp.twitter.user.profile.web.model.UserProfileRegisterRequest;
+import dev.simpleapp.twitter.user.profile.usecase.model.UserProfileRegisterCommand;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserProfileRegisterRequestToUserProfileMapperImpl
-        implements UserProfileRegisterRequestToUserProfileMapper {
-
-    private final IdentityApiService identityApiService;
-
-    public UserProfileRegisterRequestToUserProfileMapperImpl(IdentityApiService identityApiService) {
-        this.identityApiService = identityApiService;
-    }
+        implements UserProfileRegisterCommandToUserProfileMapper {
 
     @Override
-    public UserProfile map(UserProfileRegisterRequest registerRequest) {
+    public UserProfile map(UserProfileRegisterCommand registerCommand) {
 
-        CurrentUserApiModel currentUserApiModel = this.identityApiService
-                .currentUserAccount()
-                .orElseThrow(() -> new TwitterException("Для создания профиля пользователь должен быть авторизован в системе"));
+        CurrentUserApiModel currentUserApiModel = registerCommand.currentUserApiModel();
 
         UserProfile userProfile = new UserProfile();
         userProfile.setId(currentUserApiModel.userAccountId());
-        userProfile.setNickname(registerRequest.nickname());
-        userProfile.setImageLink(registerRequest.imageLink());
+        userProfile.setNickname(registerCommand.nickname());
+        userProfile.setImageLink(registerCommand.imageLink());
 
         return userProfile;
     }

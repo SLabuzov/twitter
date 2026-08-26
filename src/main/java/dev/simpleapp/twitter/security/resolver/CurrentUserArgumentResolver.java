@@ -13,11 +13,11 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
-public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final IdentityApiService identityApiService;
 
-    public CurrentUserIdArgumentResolver(IdentityApiService identityApiService) {
+    public CurrentUserArgumentResolver(IdentityApiService identityApiService) {
         this.identityApiService = identityApiService;
     }
 
@@ -25,11 +25,10 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
     public boolean supportsParameter(MethodParameter parameter) {
         boolean hasAnnotation = parameter.hasParameterAnnotation(CurrentUser.class);
 
-        boolean isLongType =
-                parameter.getParameterType() == long.class
-                        || parameter.getParameterType() == Long.class;
+        boolean isModelType =
+                parameter.getParameterType() == CurrentUserApiModel.class;
 
-        return hasAnnotation && isLongType;
+        return hasAnnotation && isModelType;
     }
 
     @Override
@@ -40,7 +39,6 @@ public class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResol
             WebDataBinderFactory binderFactory
     ) {
         return this.identityApiService.currentUserAccount()
-                .map(CurrentUserApiModel::userAccountId)
                 .orElseThrow(() -> new CurrentUserNotAuthenticatedException(
                         "Пользователь должен быть авторизован в системе"
                 ));

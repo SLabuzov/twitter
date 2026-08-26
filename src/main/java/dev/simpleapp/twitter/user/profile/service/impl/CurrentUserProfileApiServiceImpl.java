@@ -1,4 +1,4 @@
-package dev.simpleapp.twitter.user.profile.api.service.impl;
+package dev.simpleapp.twitter.user.profile.service.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
@@ -21,11 +21,18 @@ public class CurrentUserProfileApiServiceImpl
         this.userProfileService = userProfileService;
     }
 
+    @Deprecated
     @Override
     public UserProfile currentUserProfile() {
         CurrentUserApiModel currentUserApiModel = this.identityApiService.currentUserAccount()
                 .orElseThrow(() -> new TwitterException("Пользователь должен быть авторизован в системе"));
 
+        return this.userProfileService
+                .findUserProfileByIdRequired(currentUserApiModel.userAccountId());
+    }
+
+    @Override
+    public UserProfile currentUserProfile(CurrentUserApiModel currentUserApiModel) {
         return this.userProfileService
                 .findUserProfileByIdRequired(currentUserApiModel.userAccountId());
     }
