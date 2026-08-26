@@ -1,4 +1,4 @@
-package dev.simpleapp.twitter.user.profile.api.service.impl;
+package dev.simpleapp.twitter.user.profile.service.impl;
 
 import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;

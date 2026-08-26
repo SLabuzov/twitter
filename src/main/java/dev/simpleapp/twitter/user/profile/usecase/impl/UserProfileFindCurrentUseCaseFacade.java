@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.profile.usecase.impl;
 
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.mapper.UserProfileToUserProfileResponseMapper;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
@@ -20,8 +21,8 @@ public class UserProfileFindCurrentUseCaseFacade implements UserProfileFindCurre
     }
 
     @Override
-    public UserProfileResponse currentUserProfile() {
-        UserProfile currentUserProfile = currentUserProfileApiService.currentUserProfile();
+    public UserProfileResponse currentUserProfile(CurrentUserApiModel currentUserApiModel) {
+        UserProfile currentUserProfile = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         return mapper.map(currentUserProfile);
     }
