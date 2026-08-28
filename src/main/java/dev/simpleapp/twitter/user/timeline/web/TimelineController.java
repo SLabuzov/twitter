@@ -1,5 +1,7 @@
 package dev.simpleapp.twitter.user.timeline.web;
 
+import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.timeline.usecase.TimelineFindUseCase;
 import dev.simpleapp.twitter.user.timeline.web.model.TimelineFindRequest;
 import dev.simpleapp.twitter.user.timeline.web.model.TimelinePageResponse;
@@ -41,8 +43,10 @@ public class TimelineController {
                     content = @Content
             )
     })
-    public TimelinePageResponse findTimelines(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+    public TimelinePageResponse findTimelines(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                                              @RequestParam("page") int page,
+                                              @RequestParam("limit") int limit) {
         TimelineFindRequest findRequest = new TimelineFindRequest(page, limit);
-        return timelineFindUseCase.findTimelines(findRequest);
+        return timelineFindUseCase.findTimelines(findRequest, currentUserApiModel);
     }
 }

@@ -1,7 +1,7 @@
 package dev.simpleapp.twitter.security.service.impl;
 
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
-import dev.simpleapp.twitter.security.api.service.IdentityApiService;
+import dev.simpleapp.twitter.security.service.IdentityApiService;
 import dev.simpleapp.twitter.security.service.UserAccountService;
 import java.util.Optional;
 import org.springframework.security.core.Authentication;

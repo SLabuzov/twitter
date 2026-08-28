@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.timeline.usecase.impl;
 
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.timeline.mapper.TweetPageToTimelinePageResponseMapper;
@@ -31,11 +32,11 @@ public class TimelineFindUseCaseFacade implements TimelineFindUseCase {
     }
 
     @Override
-    public TimelinePageResponse findTimelines(TimelineFindRequest findRequest) {
+    public TimelinePageResponse findTimelines(TimelineFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
         Sort sort = Sort.by(Sort.Direction.DESC, Tweet_.CREATED_TIMESTAMP);
         Pageable pageable = PageRequest.of(findRequest.page(), findRequest.limit(), sort);
 
-        UserProfile follower = currentUserProfileApiService.currentUserProfile();
+        UserProfile follower = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
         Page<Tweet> tweets = tweetApiService.findAllFollowerTweets(follower, pageable);
 
         return mapper.map(tweets);
