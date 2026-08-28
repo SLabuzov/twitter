@@ -1,6 +1,7 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.mapper.TweetEditRequestToTweetMapper;
@@ -11,8 +12,10 @@ import dev.simpleapp.twitter.user.tweet.usecase.TweetEditUseCase;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetEditRequest;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional
 public class TweetEditUseCaseImpl implements TweetEditUseCase {
 
     private final TweetService tweetService;
@@ -31,9 +34,9 @@ public class TweetEditUseCaseImpl implements TweetEditUseCase {
     }
 
     @Override
-    public TweetResponse editTweet(TweetEditRequest editRequest) {
+    public TweetResponse editTweet(TweetEditRequest editRequest, CurrentUserApiModel currentUserApiModel) {
         UserProfile actor = this.currentUserProfileApiService
-                .currentUserProfile();
+                .currentUserProfile(currentUserApiModel);
 
         UserProfile owner = this.tweetService
                 .findTweetById(editRequest.id())
