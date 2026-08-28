@@ -1,8 +1,10 @@
 package dev.simpleapp.twitter.user.subscription.usecase.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
+import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
+import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
-import dev.simpleapp.twitter.user.subscription.mapper.UnsubscribeRequestToSubscriptionMapper;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionDeleteUseCase;
@@ -12,27 +14,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class SubscriptionDeleteUseCaseFacade implements SubscriptionDeleteUseCase {
 
-    private final UnsubscribeRequestToSubscriptionMapper subscriptionMapper;
+    private final CurrentUserProfileApiService currentUserProfileApiService;
+    private final UserProfileApiService userProfileApiService;
     private final SubscriptionService subscriptionService;
 
-    public SubscriptionDeleteUseCaseFacade(UnsubscribeRequestToSubscriptionMapper subscriptionMapper,
+    public SubscriptionDeleteUseCaseFacade(CurrentUserProfileApiService currentUserProfileApiService,
+                                           UserProfileApiService userProfileApiService,
                                            SubscriptionService subscriptionService) {
-        this.subscriptionMapper = subscriptionMapper;
+        this.currentUserProfileApiService = currentUserProfileApiService;
+        this.userProfileApiService = userProfileApiService;
         this.subscriptionService = subscriptionService;
     }
 
     @Override
-    public void unsubscribe(UnsubscribeRequest unsubscribeRequest) {
-        Subscription subscription = this.subscriptionMapper.map(unsubscribeRequest);
+    public void unsubscribe(UnsubscribeRequest unsubscribeRequest, CurrentUserApiModel currentUserApiModel) {
+        UserProfile follower = this.currentUserProfileApiService
+                .currentUserProfile(currentUserApiModel);
 
-        UserProfile follower = subscription.getFollower();
-        UserProfile followed = subscription.getFollowed();
+        UserProfile followed = this.userProfileApiService
+                .findUserProfileById(unsubscribeRequest.followedId());
 
         if (follower.equals(followed)) {
             throw new TwitterException("Отписка от самого себя не имеет никакого смысла");
         }
 
-        if(!this.subscriptionService.existsSubscription(subscription)) {
+        Subscription subscription = new Subscription();
+        subscription.setFollower(follower);
+        subscription.setFollowed(followed);
+
+        if (!this.subscriptionService.existsSubscription(subscription)) {
             String errorMessage = String.format(
                     "Вы не были подписаны на %s",
                     followed.getNickname()
