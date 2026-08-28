@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.mapper.TweetPageToTweetPageResponseMapper;
@@ -13,10 +14,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import static dev.simpleapp.twitter.user.tweet.model.Tweet_.CREATED_TIMESTAMP;
 
 @Component
+@Transactional
 public class TweetFindUseCaseFacade implements TweetFindUseCase {
 
     private final CurrentUserProfileApiService currentUserProfileApiService;
@@ -32,8 +35,8 @@ public class TweetFindUseCaseFacade implements TweetFindUseCase {
     }
 
     @Override
-    public TweetPageResponse findTweets(TweetFindRequest findRequest) {
-        UserProfile owner = this.currentUserProfileApiService.currentUserProfile();
+    public TweetPageResponse findTweets(TweetFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
+        UserProfile owner = this.currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Sort sort = Sort.by(Sort.Direction.DESC, CREATED_TIMESTAMP);
 

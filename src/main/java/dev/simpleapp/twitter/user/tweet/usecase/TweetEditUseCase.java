@@ -1,8 +1,9 @@
 package dev.simpleapp.twitter.user.tweet.usecase;
 
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetEditRequest;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetResponse;
 
 public interface TweetEditUseCase {
-    TweetResponse editTweet(TweetEditRequest editRequest);
+    TweetResponse editTweet(TweetEditRequest editRequest, CurrentUserApiModel currentUserApiModel);
 }

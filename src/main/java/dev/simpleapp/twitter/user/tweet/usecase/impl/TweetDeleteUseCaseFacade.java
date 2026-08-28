@@ -1,14 +1,17 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
 import dev.simpleapp.twitter.user.tweet.usecase.TweetDeleteUseCase;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional
 public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
 
     private final TweetService tweetService;
@@ -21,9 +24,9 @@ public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
     }
 
     @Override
-    public void deleteTweet(long tweetId) {
+    public void deleteTweet(long tweetId, CurrentUserApiModel currentUserApiModel) {
         UserProfile actor = this.currentUserProfileApiService
-                .currentUserProfile();
+                .currentUserProfile(currentUserApiModel);
 
         UserProfile owner = this.tweetService
                 .findTweetById(tweetId)

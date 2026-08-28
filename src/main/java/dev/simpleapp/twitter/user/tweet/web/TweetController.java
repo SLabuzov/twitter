@@ -1,5 +1,7 @@
 package dev.simpleapp.twitter.user.tweet.web;
 
+import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.tweet.usecase.TweetAddUseCase;
 import dev.simpleapp.twitter.user.tweet.usecase.TweetDeleteUseCase;
 import dev.simpleapp.twitter.user.tweet.usecase.TweetEditUseCase;
@@ -43,26 +45,30 @@ public class TweetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TweetResponse addTweet(@Valid @RequestBody TweetAddRequest addRequest) {
-        return this.tweetAddUseCase.addTweet(addRequest);
+    public TweetResponse addTweet(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                                  @Valid @RequestBody TweetAddRequest addRequest) {
+        return this.tweetAddUseCase.addTweet(addRequest, currentUserApiModel);
     }
 
     @PutMapping
-    public TweetResponse editTweet(@Valid @RequestBody TweetEditRequest editRequest) {
-        return this.tweetEditUseCase.editTweet(editRequest);
+    public TweetResponse editTweet(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                                   @Valid @RequestBody TweetEditRequest editRequest) {
+        return this.tweetEditUseCase.editTweet(editRequest, currentUserApiModel);
     }
 
     @DeleteMapping("/{tweetId}")
-    public void deleteTweet(@PathVariable long tweetId) {
-        this.tweetDeleteUseCase.deleteTweet(tweetId);
+    public void deleteTweet(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                            @PathVariable long tweetId) {
+        this.tweetDeleteUseCase.deleteTweet(tweetId, currentUserApiModel);
     }
 
     @GetMapping
     public TweetPageResponse findOwnerTweets(
+            @CurrentUser CurrentUserApiModel currentUserApiModel,
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
     ) {
         TweetFindRequest findRequest = new TweetFindRequest(page, limit);
-        return this.tweetFindUseCase.findTweets(findRequest);
+        return this.tweetFindUseCase.findTweets(findRequest, currentUserApiModel);
     }
 }
