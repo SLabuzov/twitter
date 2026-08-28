@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.subscription.usecase.impl;
 
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.subscription.model.FollowerSubscription;
@@ -29,9 +30,9 @@ public class SubscriptionFindFollowerUseCaseFacade implements SubscriptionFindFo
     }
 
     @Override
-    public FollowerPageResponse findFollowers(FollowerFindRequest findRequest) {
+    public FollowerPageResponse findFollowers(FollowerFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
 
-        UserProfile author = currentUserProfileApiService.currentUserProfile();
+        UserProfile author = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Pageable pageable = PageRequest
                 .of(

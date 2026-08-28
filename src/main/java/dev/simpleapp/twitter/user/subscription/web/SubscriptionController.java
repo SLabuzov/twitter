@@ -1,5 +1,7 @@
 package dev.simpleapp.twitter.user.subscription.web;
 
+import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
+import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionAddUseCase;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionDeleteUseCase;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionFindFollowerUseCase;
@@ -32,18 +34,22 @@ public class SubscriptionController {
     }
 
     @PostMapping("/subscribe")
-    public void subscribe(@Valid @RequestBody SubscribeRequest subscribeRequest) {
-        this.subscriptionAddUseCase.subscribe(subscribeRequest);
+    public void subscribe(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                          @Valid @RequestBody SubscribeRequest subscribeRequest) {
+        this.subscriptionAddUseCase.subscribe(subscribeRequest, currentUserApiModel);
     }
 
     @PostMapping("/unsubscribe")
-    public void unsubscribe(@Valid @RequestBody UnsubscribeRequest unsubscribeRequest) {
-        this.subscriptionDeleteUseCase.unsubscribe(unsubscribeRequest);
+    public void unsubscribe(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                            @Valid @RequestBody UnsubscribeRequest unsubscribeRequest) {
+        this.subscriptionDeleteUseCase.unsubscribe(unsubscribeRequest, currentUserApiModel);
     }
 
     @GetMapping("/followers")
-    public FollowerPageResponse allFollowers(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+    public FollowerPageResponse allFollowers(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                                             @RequestParam("page") int page,
+                                             @RequestParam("limit") int limit) {
         FollowerFindRequest findRequest = new FollowerFindRequest(page, limit);
-        return this.subscriptionFindFollowerUseCase.findFollowers(findRequest);
+        return this.subscriptionFindFollowerUseCase.findFollowers(findRequest, currentUserApiModel);
     }
 }
