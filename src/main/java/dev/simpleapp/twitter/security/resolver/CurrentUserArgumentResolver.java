@@ -3,7 +3,7 @@ package dev.simpleapp.twitter.security.resolver;
 import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
 import dev.simpleapp.twitter.security.api.exception.CurrentUserNotAuthenticatedException;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
-import dev.simpleapp.twitter.security.api.service.IdentityApiService;
+import dev.simpleapp.twitter.security.service.IdentityApiService;
 import org.jspecify.annotations.NonNull;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
