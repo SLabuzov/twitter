@@ -2,6 +2,7 @@ package dev.simpleapp.twitter.user.profile.web;
 
 import dev.simpleapp.twitter.security.web.model.LoginRequest;
 import dev.simpleapp.twitter.security.web.model.RegisterRequest;
+import dev.simpleapp.twitter.user.profile.web.model.UserProfileEditRequest;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileRegisterRequest;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import tools.jackson.databind.ObjectMapper;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -100,6 +102,53 @@ class UserProfileControllerIntTest {
     }
 
     @Test
+    void shouldNotCreateUserProfile() throws Exception {
+        // Register a new account first
+        String uniqueEmail = UUID.randomUUID().toString().substring(0, 8) + "@test.com";
+        RegisterRequest registerRequest = new RegisterRequest(uniqueEmail, "strong_password");
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/accounts/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(registerRequest))
+                )
+                .andExpect(status().isCreated());
+
+        // Get token for the new user
+        LoginRequest loginRequest = new LoginRequest(uniqueEmail, "strong_password");
+        MvcResult tokenResult = restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/authentication/access_token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String newUserToken = objectMapper.readTree(tokenResult.getResponse().getContentAsString())
+                .get("idToken").asString();
+
+        UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
+                "eduardo_jaskolski",
+                "https://gravatar.com/avatar/test123"
+        );
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(profileRequest))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Профиль пользователя с Nickname = eduardo_jaskolski ранее уже был создан"));
+    }
+
+    @Test
     void shouldGetCurrentUserProfile() throws Exception {
         restMockMvc
                 .perform(
@@ -136,6 +185,205 @@ class UserProfileControllerIntTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userProfiles").isArray())
                 .andExpect(jsonPath("$.totalTweets").isNumber());
+    }
+
+    @Test
+    void shouldEditNicknameAndImageLink() throws Exception {
+        // Register a new account first
+        String uniqueEmail = UUID.randomUUID().toString().substring(0, 8) + "@test.com";
+        RegisterRequest registerRequest = new RegisterRequest(uniqueEmail, "strong_password");
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/accounts/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(registerRequest))
+                )
+                .andExpect(status().isCreated());
+
+        // Get token for the new user
+        LoginRequest loginRequest = new LoginRequest(uniqueEmail, "strong_password");
+        MvcResult tokenResult = restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/authentication/access_token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String newUserToken = objectMapper.readTree(tokenResult.getResponse().getContentAsString())
+                .get("idToken").asString();
+
+        String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
+        String imageLink = "https://gravatar.com/avatar/test123";
+        UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
+                nickname,
+                imageLink
+        );
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(profileRequest))
+                )
+                .andExpect(status().isCreated());
+
+
+        String updatedNickname = "updated_" + UUID.randomUUID().toString().substring(0, 8);
+        String updatedImageLink = "https://gravatar.com/avatar/test321";
+        UserProfileEditRequest editRequest = new UserProfileEditRequest(
+                updatedNickname, updatedImageLink
+        );
+
+        assertNotEquals(nickname, updatedNickname);
+        assertNotEquals(imageLink, updatedImageLink);
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(editRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value(updatedNickname))
+                .andExpect(jsonPath("$.imageLink").value(updatedImageLink));
+    }
+
+    @Test
+    void shouldNotEditUserProfile() throws Exception {
+        // Register a new account first
+        String uniqueEmail = UUID.randomUUID().toString().substring(0, 8) + "@test.com";
+        RegisterRequest registerRequest = new RegisterRequest(uniqueEmail, "strong_password");
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/accounts/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(registerRequest))
+                )
+                .andExpect(status().isCreated());
+
+        // Get token for the new user
+        LoginRequest loginRequest = new LoginRequest(uniqueEmail, "strong_password");
+        MvcResult tokenResult = restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/authentication/access_token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String newUserToken = objectMapper.readTree(tokenResult.getResponse().getContentAsString())
+                .get("idToken").asString();
+
+        String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
+        String imageLink = "https://gravatar.com/avatar/test123";
+        UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
+                nickname,
+                imageLink
+        );
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(profileRequest))
+                )
+                .andExpect(status().isCreated());
+
+        UserProfileEditRequest editRequest = new UserProfileEditRequest(
+                nickname, imageLink
+        );
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(editRequest))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value(nickname))
+                .andExpect(jsonPath("$.imageLink").value(imageLink));
+    }
+
+    @Test
+    void shouldNotEditNicknameBecauseAvailable() throws Exception {
+        // Register a new account first
+        String uniqueEmail = UUID.randomUUID().toString().substring(0, 8) + "@test.com";
+        RegisterRequest registerRequest = new RegisterRequest(uniqueEmail, "strong_password");
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/accounts/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(registerRequest))
+                )
+                .andExpect(status().isCreated());
+
+        // Get token for the new user
+        LoginRequest loginRequest = new LoginRequest(uniqueEmail, "strong_password");
+        MvcResult tokenResult = restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/authentication/access_token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(loginRequest))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String newUserToken = objectMapper.readTree(tokenResult.getResponse().getContentAsString())
+                .get("idToken").asString();
+
+        String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
+        String imageLink = "https://gravatar.com/avatar/test123";
+        UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
+                nickname,
+                imageLink
+        );
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .post("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(profileRequest))
+                )
+                .andExpect(status().isCreated());
+
+        String updatedAvailableNickname = "eduardo_jaskolski";
+
+        UserProfileEditRequest editRequest = new UserProfileEditRequest(
+                updatedAvailableNickname, imageLink
+        );
+
+        restMockMvc
+                .perform(
+                        MockMvcRequestBuilders
+                                .put("/api/v1/user-profiles")
+                                .header("Authorization", "Bearer " + newUserToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(editRequest))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Никнейм 'eduardo_jaskolski' уже занят"));
     }
 }
 

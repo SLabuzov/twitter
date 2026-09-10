@@ -61,4 +61,23 @@ public class UserProfileServiceImpl implements UserProfileService {
     public Page<UserProfile> findAllUserProfilesNicknameLike(String searchingName, Pageable pageable) {
         return userProfileRepository.findAllByNicknameContainingIgnoreCase(searchingName, pageable);
     }
+
+    @Override
+    public UserProfile updateNickname(UserProfile currentProfile, String nickname) {
+        if (this.userProfileRepository.existsByNickname(nickname)) {
+            throw new TwitterException(
+                    String.format("Никнейм '%s' уже занят", nickname)
+            );
+        }
+        currentProfile.setNickname(nickname);
+
+        return this.userProfileRepository.save(currentProfile);
+    }
+
+    @Override
+    public UserProfile updateImageLink(UserProfile currentProfile, String imageLink) {
+        currentProfile.setImageLink(imageLink);
+
+        return this.userProfileRepository.save(currentProfile);
+    }
 }
