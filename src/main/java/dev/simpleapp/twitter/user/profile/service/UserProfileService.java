@@ -17,4 +17,6 @@ public interface UserProfileService {
     UserProfile updateNickname(UserProfile currentProfile, @NotBlank String nickname);
 
     UserProfile updateImageLink(UserProfile currentProfile, @NotBlank String imageLink);
+
+    UserProfile updateBio(UserProfile currentProfile, @NotBlank String bio);
 }

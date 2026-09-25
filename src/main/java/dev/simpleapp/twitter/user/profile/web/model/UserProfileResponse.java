@@ -7,5 +7,6 @@ public record UserProfileResponse(
         @NotBlank
         String nickname,
         @NotBlank
-        String imageLink) {
+        String imageLink,
+        String bio) {
 }

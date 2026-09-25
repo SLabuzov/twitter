@@ -19,6 +19,7 @@ public class UserProfileRegisterRequestToUserProfileMapperImpl
         userProfile.setId(currentUserApiModel.userAccountId());
         userProfile.setNickname(registerCommand.nickname());
         userProfile.setImageLink(registerCommand.imageLink());
+        userProfile.setBio(registerCommand.bio());
 
         return userProfile;
     }

@@ -5,6 +5,7 @@ import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 public record UserProfileRegisterCommand(
         CurrentUserApiModel currentUserApiModel,
         String nickname,
-        String imageLink
+        String imageLink,
+        String bio
 ) {
 }

@@ -14,7 +14,8 @@ public class UserProfileToUserProfileResponseMapperImpl
         return new UserProfileResponse(
                 source.getId(),
                 source.getNickname(),
-                source.getImageLink()
+                source.getImageLink(),
+                source.getBio()
         );
     }
 }

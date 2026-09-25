@@ -21,4 +21,7 @@ public class UserProfile {
     @Column(nullable = false)
     private String imageLink;
 
+    @Column(length = 160)
+    private String bio;
+
 }

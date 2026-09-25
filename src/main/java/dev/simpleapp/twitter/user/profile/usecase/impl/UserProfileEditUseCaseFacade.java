@@ -41,6 +41,10 @@ public class UserProfileEditUseCaseFacade implements UserProfileEditUseCase {
             currentProfile = this.userProfileService.updateImageLink(currentProfile, editRequest.imageLink());
         }
 
+        if (!currentProfile.getBio().equals(editRequest.bio())) {
+            currentProfile = this.userProfileService.updateBio(currentProfile, editRequest.bio());
+        }
+
         return this.mapper.map(currentProfile);
     }
 }
