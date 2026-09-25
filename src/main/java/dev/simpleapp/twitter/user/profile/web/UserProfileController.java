@@ -51,7 +51,8 @@ public class UserProfileController {
         var command = new UserProfileRegisterCommand(
                 currentUserApiModel,
                 registerRequest.nickname(),
-                registerRequest.imageLink()
+                registerRequest.imageLink(),
+                registerRequest.bio()
         );
 
         this.registerUseCase.registerUserProfile(command);

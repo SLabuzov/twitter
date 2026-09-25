@@ -80,4 +80,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         return this.userProfileRepository.save(currentProfile);
     }
+
+    @Override
+    public UserProfile updateBio(UserProfile currentProfile, String bio) {
+        currentProfile.setBio(bio);
+
+        return this.userProfileRepository.save(currentProfile);
+    }
 }

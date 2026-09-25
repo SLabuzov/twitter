@@ -251,7 +251,8 @@ class SubscriptionControllerIntTest {
         String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
         UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
                 nickname,
-                "https://gravatar.com/avatar/test123"
+                "https://gravatar.com/avatar/test123",
+                "Product Manager @TechCorp. Развиваю AI-продукты, строю финтех-метрики. Пишу про стартапы и продуктовое мышление. По вопросам сотрудничества — в DM. \uD83D\uDE80"
         );
 
         restMockMvc

@@ -87,7 +87,8 @@ class UserProfileControllerIntTest {
         String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
         UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
                 nickname,
-                "https://gravatar.com/avatar/test123"
+                "https://gravatar.com/avatar/test123",
+                "Создаю визуал, который продает. Фотограф и UI-дизайнер на фрилансе. Напиши мне, чтобы упаковать твой бренд с нуля. Портфолио по ссылке ниже. ✨"
         );
 
         restMockMvc
@@ -133,7 +134,8 @@ class UserProfileControllerIntTest {
 
         UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
                 "eduardo_jaskolski",
-                "https://gravatar.com/avatar/test123"
+                "https://gravatar.com/avatar/test123",
+                "Создаю визуал, который продает. Фотограф и UI-дизайнер на фрилансе. Напиши мне, чтобы упаковать твой бренд с нуля. Портфолио по ссылке ниже. ✨"
         );
 
         restMockMvc
@@ -219,9 +221,11 @@ class UserProfileControllerIntTest {
 
         String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
         String imageLink = "https://gravatar.com/avatar/test123";
+        String bio = "Создаю визуал, который продает. Фотограф и UI-дизайнер на фрилансе. Напиши мне, чтобы упаковать твой бренд с нуля. Портфолио по ссылке ниже. ✨";
         UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
                 nickname,
-                imageLink
+                imageLink,
+                bio
         );
 
         restMockMvc
@@ -237,8 +241,9 @@ class UserProfileControllerIntTest {
 
         String updatedNickname = "updated_" + UUID.randomUUID().toString().substring(0, 8);
         String updatedImageLink = "https://gravatar.com/avatar/test321";
+        String updatedBio = "Создаю визуал, который продает. Фотограф и UI-дизайнер на фрилансе. Напиши мне, чтобы упаковать твой бренд с нуля. Портфолио по ссылке ниже. ✨";
         UserProfileEditRequest editRequest = new UserProfileEditRequest(
-                updatedNickname, updatedImageLink
+                updatedNickname, updatedImageLink, updatedBio
         );
 
         assertNotEquals(nickname, updatedNickname);
@@ -254,7 +259,8 @@ class UserProfileControllerIntTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value(updatedNickname))
-                .andExpect(jsonPath("$.imageLink").value(updatedImageLink));
+                .andExpect(jsonPath("$.imageLink").value(updatedImageLink))
+                .andExpect(jsonPath("$.bio").value(updatedBio));
     }
 
     @Test
@@ -289,9 +295,11 @@ class UserProfileControllerIntTest {
 
         String nickname = "test_" + UUID.randomUUID().toString().substring(0, 8);
         String imageLink = "https://gravatar.com/avatar/test123";
+        String bio = "Создаю визуал, который продает. Фотограф и UI-дизайнер на фрилансе. Напиши мне, чтобы упаковать твой бренд с нуля. Портфолио по ссылке ниже. ✨";
         UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
                 nickname,
-                imageLink
+                imageLink,
+                bio
         );
 
         restMockMvc
@@ -305,7 +313,7 @@ class UserProfileControllerIntTest {
                 .andExpect(status().isCreated());
 
         UserProfileEditRequest editRequest = new UserProfileEditRequest(
-                nickname, imageLink
+                nickname, imageLink, bio
         );
 
         restMockMvc
@@ -318,7 +326,8 @@ class UserProfileControllerIntTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nickname").value(nickname))
-                .andExpect(jsonPath("$.imageLink").value(imageLink));
+                .andExpect(jsonPath("$.imageLink").value(imageLink))
+                .andExpect(jsonPath("$.bio").value(bio));
     }
 
     @Test
@@ -355,7 +364,8 @@ class UserProfileControllerIntTest {
         String imageLink = "https://gravatar.com/avatar/test123";
         UserProfileRegisterRequest profileRequest = new UserProfileRegisterRequest(
                 nickname,
-                imageLink
+                imageLink,
+                ""
         );
 
         restMockMvc
@@ -371,7 +381,7 @@ class UserProfileControllerIntTest {
         String updatedAvailableNickname = "eduardo_jaskolski";
 
         UserProfileEditRequest editRequest = new UserProfileEditRequest(
-                updatedAvailableNickname, imageLink
+                updatedAvailableNickname, imageLink, null
         );
 
         restMockMvc
