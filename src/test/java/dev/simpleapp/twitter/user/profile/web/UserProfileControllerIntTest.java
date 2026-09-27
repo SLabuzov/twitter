@@ -1,9 +1,11 @@
 package dev.simpleapp.twitter.user.profile.web;
 
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.web.model.LoginRequest;
 import dev.simpleapp.twitter.security.web.model.RegisterRequest;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileEditRequest;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileRegisterRequest;
+import java.util.Locale;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,9 @@ class UserProfileControllerIntTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private MessageProvider messageProvider;
 
     private String accessToken;
 
@@ -104,6 +109,7 @@ class UserProfileControllerIntTest {
 
     @Test
     void shouldNotCreateUserProfile() throws Exception {
+        Locale.setDefault(Locale.ENGLISH);
         // Register a new account first
         String uniqueEmail = UUID.randomUUID().toString().substring(0, 8) + "@test.com";
         RegisterRequest registerRequest = new RegisterRequest(uniqueEmail, "strong_password");
@@ -114,7 +120,9 @@ class UserProfileControllerIntTest {
                                 .post("/api/v1/accounts/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsBytes(registerRequest))
+                                .locale(Locale.ENGLISH)
                 )
+
                 .andExpect(status().isCreated());
 
         // Get token for the new user
@@ -138,6 +146,11 @@ class UserProfileControllerIntTest {
                 "Создаю визуал, который продает. Фотограф и UI-дизайнер на фрилансе. Напиши мне, чтобы упаковать твой бренд с нуля. Портфолио по ссылке ниже. ✨"
         );
 
+        String expectedError = messageProvider.getMessage(
+                "error.profile.already.exists.by.nickname",
+                profileRequest.nickname()
+        );
+
         restMockMvc
                 .perform(
                         MockMvcRequestBuilders
@@ -147,7 +160,7 @@ class UserProfileControllerIntTest {
                                 .content(objectMapper.writeValueAsBytes(profileRequest))
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detail").value("Профиль пользователя с Nickname = eduardo_jaskolski ранее уже был создан"));
+                .andExpect(jsonPath("$.detail").value(expectedError));
     }
 
     @Test
@@ -332,6 +345,7 @@ class UserProfileControllerIntTest {
 
     @Test
     void shouldNotEditNicknameBecauseAvailable() throws Exception {
+        Locale.setDefault(Locale.of("ru"));
         // Register a new account first
         String uniqueEmail = UUID.randomUUID().toString().substring(0, 8) + "@test.com";
         RegisterRequest registerRequest = new RegisterRequest(uniqueEmail, "strong_password");
@@ -353,6 +367,7 @@ class UserProfileControllerIntTest {
                                 .post("/api/v1/authentication/access_token")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsBytes(loginRequest))
+                                .locale(Locale.of("ru"))
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -384,6 +399,11 @@ class UserProfileControllerIntTest {
                 updatedAvailableNickname, imageLink, null
         );
 
+        String expectedError = messageProvider.getMessage(
+                "error.profile.nickname.taken",
+                editRequest.nickname()
+        );
+
         restMockMvc
                 .perform(
                         MockMvcRequestBuilders
@@ -391,9 +411,10 @@ class UserProfileControllerIntTest {
                                 .header("Authorization", "Bearer " + newUserToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsBytes(editRequest))
+                                .locale(Locale.of("ru"))
                 )
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.detail").value("Никнейм 'eduardo_jaskolski' уже занят"));
+                .andExpect(jsonPath("$.detail").value(expectedError));
     }
 }
 

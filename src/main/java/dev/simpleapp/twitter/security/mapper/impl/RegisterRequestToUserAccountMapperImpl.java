@@ -1,6 +1,7 @@
 package dev.simpleapp.twitter.security.mapper.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.mapper.RegisterRequestToUserAccountMapper;
 import dev.simpleapp.twitter.security.model.UserAccount;
 import dev.simpleapp.twitter.security.model.UserRole;
@@ -16,18 +17,23 @@ public class RegisterRequestToUserAccountMapperImpl implements RegisterRequestTo
 
     private final UserRoleService userRoleService;
     private final PasswordEncoder passwordEncoder;
+    private final MessageProvider messageProvider;
 
     public RegisterRequestToUserAccountMapperImpl(UserRoleService userRoleService,
-                                                  PasswordEncoder passwordEncoder) {
+                                                  PasswordEncoder passwordEncoder,
+                                                  MessageProvider messageProvider) {
         this.userRoleService = userRoleService;
         this.passwordEncoder = passwordEncoder;
+        this.messageProvider = messageProvider;
     }
 
     @Override
     public UserAccount map(RegisterRequest registerRequest) {
         UserRole userRole = this.userRoleService
                 .findUserRole()
-                .orElseThrow(() -> new TwitterException("User role not found"));
+                .orElseThrow(() -> new TwitterException(
+                        messageProvider.getMessage("error.auth.role.not.found")
+                ));
 
         UserAccount userAccount = new UserAccount();
         userAccount.setUsername(registerRequest.username().toLowerCase(Locale.ROOT));

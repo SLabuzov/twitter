@@ -1,6 +1,7 @@
 package dev.simpleapp.twitter.user.profile.service.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.profile.repository.UserProfileRepository;
 import dev.simpleapp.twitter.user.profile.service.UserProfileService;
@@ -12,29 +13,25 @@ import org.springframework.stereotype.Service;
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
+    private final MessageProvider messageProvider;
 
-    public UserProfileServiceImpl(UserProfileRepository userProfileRepository) {
+    public UserProfileServiceImpl(UserProfileRepository userProfileRepository, MessageProvider messageProvider) {
         this.userProfileRepository = userProfileRepository;
+        this.messageProvider = messageProvider;
     }
 
     @Override
     public void createUserProfile(UserProfile userProfile) {
         if (this.userProfileRepository.existsById(userProfile.getId())) {
-            String errorMessage = String
-                    .format(
-                            "Профиль пользователя с Id = %d ранее уже был создан",
-                            userProfile.getId()
-                    );
-            throw new TwitterException(errorMessage);
+            throw new TwitterException(
+                    messageProvider.getMessage("error.profile.already.exists.by.id", userProfile.getId())
+            );
         }
 
         if (this.userProfileRepository.existsByNickname(userProfile.getNickname())) {
-            String errorMessage = String
-                    .format(
-                            "Профиль пользователя с Nickname = %s ранее уже был создан",
-                            userProfile.getNickname()
-                    );
-            throw new TwitterException(errorMessage);
+            throw new TwitterException(
+                    messageProvider.getMessage("error.profile.already.exists.by.nickname", userProfile.getNickname())
+            );
         }
 
         this.userProfileRepository.save(userProfile);
@@ -43,13 +40,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public UserProfile findUserProfileByIdRequired(long userProfileId) {
         return this.userProfileRepository.findById(userProfileId)
-                .orElseThrow(() -> {
-                    String errorMessage = String.format(
-                            "Профиля пользователя с id = %d  в системе не существует",
-                            userProfileId
-                    );
-                    return new TwitterException(errorMessage);
-                });
+                .orElseThrow(() -> new TwitterException(
+                        messageProvider.getMessage("error.profile.not.found", userProfileId)
+                ));
     }
 
     @Override
@@ -66,7 +59,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfile updateNickname(UserProfile currentProfile, String nickname) {
         if (this.userProfileRepository.existsByNickname(nickname)) {
             throw new TwitterException(
-                    String.format("Никнейм '%s' уже занят", nickname)
+                    messageProvider.getMessage("error.profile.nickname.taken", nickname)
             );
         }
         currentProfile.setNickname(nickname);

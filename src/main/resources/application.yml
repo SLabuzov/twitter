@@ -10,6 +10,9 @@ spring:
     properties:
       hibernate.jdbc.time_zone: UTC
       hibernate.format_sql: true
+  messages:
+    basename: messages
+    encoding: UTF-8
 logging:
   level:
     org:
