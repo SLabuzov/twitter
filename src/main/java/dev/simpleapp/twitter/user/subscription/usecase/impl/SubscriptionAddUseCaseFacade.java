@@ -1,6 +1,7 @@
 package dev.simpleapp.twitter.user.subscription.usecase.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
@@ -19,13 +20,16 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
     private final CurrentUserProfileApiService currentUserProfileApiService;
     private final UserProfileApiService userProfileApiService;
     private final SubscriptionService subscriptionService;
+    private final MessageProvider messageProvider;
 
     public SubscriptionAddUseCaseFacade(CurrentUserProfileApiService currentUserProfileApiService,
                                         UserProfileApiService userProfileApiService,
-                                        SubscriptionService subscriptionService) {
+                                        SubscriptionService subscriptionService,
+                                        MessageProvider messageProvider) {
         this.currentUserProfileApiService = currentUserProfileApiService;
         this.userProfileApiService = userProfileApiService;
         this.subscriptionService = subscriptionService;
+        this.messageProvider = messageProvider;
     }
 
 
@@ -38,7 +42,7 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
                 .findUserProfileById(subscribeRequest.followedId());
 
         if (follower.equals(followed)) {
-            throw new TwitterException("Подписка на самого себя не имеет никакого смысла");
+            throw new TwitterException(messageProvider.getMessage("error.subscription.self.subscribe"));
         }
 
         Subscription subscription = new Subscription();
@@ -46,11 +50,9 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
         subscription.setFollowed(followed);
 
         if (this.subscriptionService.existsSubscription(subscription)) {
-            String errorMessage = String.format(
-                    "Вы уже подписаны на %s",
-                    followed.getNickname()
+            throw new TwitterException(
+                    messageProvider.getMessage("error.subscription.already.exists", followed.getNickname())
             );
-            throw new TwitterException(errorMessage);
         }
 
         this.subscriptionService.createSubscription(subscription);

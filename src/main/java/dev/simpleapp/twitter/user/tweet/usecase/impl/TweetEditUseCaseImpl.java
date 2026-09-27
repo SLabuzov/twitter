@@ -1,10 +1,10 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
-import dev.simpleapp.twitter.user.tweet.mapper.TweetEditRequestToTweetMapper;
 import dev.simpleapp.twitter.user.tweet.mapper.TweetToTweetResponseMapper;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
@@ -19,18 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class TweetEditUseCaseImpl implements TweetEditUseCase {
 
     private final TweetService tweetService;
-    private final TweetEditRequestToTweetMapper tweetEditRequestToTweetMapper;
     private final TweetToTweetResponseMapper tweetToTweetResponseMapper;
     private final CurrentUserProfileApiService currentUserProfileApiService;
+    private final MessageProvider messageProvider;
 
     public TweetEditUseCaseImpl(TweetService tweetService,
-                                TweetEditRequestToTweetMapper tweetEditRequestToTweetMapper,
+
                                 TweetToTweetResponseMapper tweetToTweetResponseMapper,
-                                CurrentUserProfileApiService currentUserProfileApiService) {
+                                CurrentUserProfileApiService currentUserProfileApiService, MessageProvider messageProvider) {
         this.tweetService = tweetService;
-        this.tweetEditRequestToTweetMapper = tweetEditRequestToTweetMapper;
         this.tweetToTweetResponseMapper = tweetToTweetResponseMapper;
         this.currentUserProfileApiService = currentUserProfileApiService;
+        this.messageProvider = messageProvider;
     }
 
     @Override
@@ -38,25 +38,22 @@ public class TweetEditUseCaseImpl implements TweetEditUseCase {
         UserProfile actor = this.currentUserProfileApiService
                 .currentUserProfile(currentUserApiModel);
 
-        UserProfile owner = this.tweetService
+        Tweet currentTweet = this.tweetService
                 .findTweetById(editRequest.id())
-                .map(Tweet::getUserProfile)
-                .orElseThrow(() -> {
-                    String errorMessage = String.format("Твит с id = %d не существует", editRequest.id());
-                    return new TwitterException(errorMessage);
-                });
+                .orElseThrow(() -> new TwitterException(
+                        messageProvider.getMessage("error.tweet.not.found", editRequest.id())
+                ));
+
+        UserProfile owner = currentTweet.getUserProfile();
 
         if (!actor.equals(owner)) {
-            String errorMessage = String.format(
-                    "Редактирование твита с id = %d запрещено. Пользователь %s не является его владельцем",
-                    editRequest.id(),
-                    actor.getNickname()
+            throw new TwitterException(
+                    messageProvider.getMessage("error.tweet.edit.forbidden", editRequest.id(), actor.getNickname())
             );
-            throw new TwitterException(errorMessage);
         }
 
-        Tweet tweet = this.tweetEditRequestToTweetMapper.map(editRequest);
-        Tweet updatedTweet = this.tweetService.updateTweet(tweet);
+        currentTweet.setMessage(editRequest.message());
+        Tweet updatedTweet = this.tweetService.updateTweet(currentTweet);
 
         return this.tweetToTweetResponseMapper.map(updatedTweet);
     }

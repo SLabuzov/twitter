@@ -1,6 +1,7 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
@@ -16,11 +17,14 @@ public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
 
     private final TweetService tweetService;
     private final CurrentUserProfileApiService currentUserProfileApiService;
+    private final MessageProvider messageProvider;
 
     public TweetDeleteUseCaseFacade(TweetService tweetService,
-                                    CurrentUserProfileApiService currentUserProfileApiService) {
+                                    CurrentUserProfileApiService currentUserProfileApiService,
+                                    MessageProvider messageProvider) {
         this.tweetService = tweetService;
         this.currentUserProfileApiService = currentUserProfileApiService;
+        this.messageProvider = messageProvider;
     }
 
     @Override
@@ -31,18 +35,14 @@ public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
         UserProfile owner = this.tweetService
                 .findTweetById(tweetId)
                 .map(Tweet::getUserProfile)
-                .orElseThrow(() -> {
-                    String errorMessage = String.format("Твит с id = %d не существует", tweetId);
-                    return new TwitterException(errorMessage);
-                });
+                .orElseThrow(() -> new TwitterException(
+                        messageProvider.getMessage("error.tweet.not.found", tweetId)
+                ));
 
         if (!actor.equals(owner)) {
-            String errorMessage = String.format(
-                    "Удаление твита с id = %d запрещено. Пользователь %s не является его владельцем",
-                    tweetId,
-                    actor.getNickname()
+            throw new TwitterException(
+                    messageProvider.getMessage("error.tweet.delete.forbidden", tweetId, actor.getNickname())
             );
-            throw new TwitterException(errorMessage);
         }
         this.tweetService.deleteTweet(tweetId);
     }

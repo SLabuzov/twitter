@@ -1,6 +1,7 @@
 package dev.simpleapp.twitter.security.service.impl;
 
 import dev.simpleapp.twitter.common.exception.TwitterException;
+import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.service.AccessTokenService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -18,18 +19,22 @@ import org.springframework.stereotype.Service;
 public class JwtAccessTokenService implements AccessTokenService {
 
     private final JwtEncoder jwtEncoder;
+    private final MessageProvider messageProvider;
 
-    public JwtAccessTokenService(JwtEncoder jwtEncoder) {
+    public JwtAccessTokenService(JwtEncoder jwtEncoder, MessageProvider messageProvider) {
         this.jwtEncoder = jwtEncoder;
+        this.messageProvider = messageProvider;
     }
 
     @Override
     public String generateIdToken(Authentication authentication) {
         UserDetails userDetails = Optional
-                .of(authentication.getPrincipal())
+                .ofNullable(authentication.getPrincipal())
                 .filter(UserDetails.class::isInstance)
                 .map(UserDetails.class::cast)
-                .orElseThrow(() -> new TwitterException("Не удалось сформировать объект UserDetails из объекта Authentication"));
+                .orElseThrow(() -> new TwitterException(
+                        messageProvider.getMessage("error.auth.userdetails.failed")
+                ));
 
 
         List<String> roles = userDetails
