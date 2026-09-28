@@ -13,8 +13,25 @@ spring:
   messages:
     basename: messages
     encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
 logging:
   level:
     org:
       springframework:
         security: debug
+twitter:
+  minio:
+    url: ${MINIO_HOST_URL}
+    access-key: ${MINIO_ROOT_USER}
+    secret-key: ${MINIO_ROOT_PASSWORD}
+    bucket: twitter-images
+
+  file-storage:
+    max-file-size: 5MB
+    allowed-content-types:
+      - image/jpeg
+      - image/png
+      - image/gif
