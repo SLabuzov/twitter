@@ -11,3 +11,17 @@ services:
     image: sonarqube:26.8.0.126808-community
     ports:
       - '9000:9000'
+  minio:
+    image: pgsty/minio:RELEASE.2026-06-18T00-00-00Z
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    ports:
+      - '9090:9000'
+      - '9091:9001'
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+
+volumes:
+  minio-data:

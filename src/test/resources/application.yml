@@ -7,3 +7,16 @@ spring:
       hibernate.jdbc.time_zone: UTC
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.test.yaml
+twitter:
+  minio:
+    url: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: twitter-media
+
+  file-storage:
+    max-file-size: 5MB
+    allowed-content-types:
+      - image/jpeg
+      - image/png
+      - image/gif
