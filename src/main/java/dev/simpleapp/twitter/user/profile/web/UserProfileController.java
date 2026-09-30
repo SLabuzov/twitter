@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.profile.web;
 
+import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.usecase.UserProfileEditUseCase;
@@ -9,7 +10,6 @@ import dev.simpleapp.twitter.user.profile.usecase.UserProfileRegisterUseCase;
 import dev.simpleapp.twitter.user.profile.usecase.model.UserProfileRegisterCommand;
 import dev.simpleapp.twitter.user.profile.usecase.model.UserProfilesFindQuery;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileEditRequest;
-import dev.simpleapp.twitter.user.profile.web.model.UserProfilePageResponse;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileRegisterRequest;
 import dev.simpleapp.twitter.user.profile.web.model.UserProfileResponse;
 import jakarta.validation.Valid;
@@ -70,7 +70,7 @@ public class UserProfileController {
     }
 
     @GetMapping
-    public UserProfilePageResponse findUserProfiles(
+    public PageResponse<UserProfileResponse> findUserProfiles(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit,
             @RequestParam("name") String name

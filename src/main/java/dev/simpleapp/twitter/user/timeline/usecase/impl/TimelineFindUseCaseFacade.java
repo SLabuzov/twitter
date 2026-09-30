@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.timeline.usecase.impl;
 
+import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
@@ -8,9 +9,8 @@ import dev.simpleapp.twitter.user.timeline.model.TimelineFeed_;
 import dev.simpleapp.twitter.user.timeline.service.TimelineFeedService;
 import dev.simpleapp.twitter.user.timeline.usecase.TimelineFindUseCase;
 import dev.simpleapp.twitter.user.timeline.web.model.TimelineFindRequest;
-import dev.simpleapp.twitter.user.timeline.web.model.TimelinePageResponse;
 import dev.simpleapp.twitter.user.timeline.web.model.TimelineResponse;
-import java.util.Collection;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,7 @@ public class TimelineFindUseCaseFacade implements TimelineFindUseCase {
     }
 
     @Override
-    public TimelinePageResponse findTimelines(TimelineFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
+    public PageResponse<TimelineResponse> findTimelines(TimelineFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
         Sort sort = Sort.by(Sort.Direction.DESC, TimelineFeed_.CREATED_TIMESTAMP);
         Pageable pageable = PageRequest.of(findRequest.page(), findRequest.limit(), sort);
 
@@ -41,7 +41,7 @@ public class TimelineFindUseCaseFacade implements TimelineFindUseCase {
         Page<TimelineFeed> feedSlice = timelineFeedService
                 .getReaderFeedSlice(follower.getId(), pageable);
 
-        Collection<TimelineResponse> feeds = feedSlice
+        List<TimelineResponse> feeds = feedSlice
                 .stream()
                 .map(feed -> new TimelineResponse(
                         feed.getTweetId(),
@@ -53,11 +53,6 @@ public class TimelineFindUseCaseFacade implements TimelineFindUseCase {
                 ))
                 .toList();
 
-        return new TimelinePageResponse(
-                feedSlice.getTotalElements(),
-                feedSlice.isFirst(),
-                feedSlice.isLast(),
-                feeds
-        );
+        return PageResponse.from(feedSlice, feeds);
     }
 }

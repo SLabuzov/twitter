@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.subscription.usecase.impl;
 
+import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
@@ -8,7 +9,6 @@ import dev.simpleapp.twitter.user.subscription.model.Subscription_;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionFindFollowerUseCase;
 import dev.simpleapp.twitter.user.subscription.web.model.FollowerFindRequest;
-import dev.simpleapp.twitter.user.subscription.web.model.FollowerPageResponse;
 import dev.simpleapp.twitter.user.subscription.web.model.FollowerResponse;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class SubscriptionFindFollowerUseCaseFacade implements SubscriptionFindFo
     }
 
     @Override
-    public FollowerPageResponse findFollowers(FollowerFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
+    public PageResponse<FollowerResponse> findFollowers(FollowerFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
 
         UserProfile author = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
@@ -59,11 +59,6 @@ public class SubscriptionFindFollowerUseCaseFacade implements SubscriptionFindFo
                         )
                 ).toList();
 
-        return new FollowerPageResponse(
-                subscriptions.getTotalElements(),
-                subscriptions.isFirst(),
-                subscriptions.isLast(),
-                followers
-        );
+        return PageResponse.from(subscriptions, followers);
     }
 }

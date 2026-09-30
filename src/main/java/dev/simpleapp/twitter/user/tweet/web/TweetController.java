@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.tweet.web;
 
+import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.tweet.usecase.TweetAddUseCase;
@@ -9,7 +10,6 @@ import dev.simpleapp.twitter.user.tweet.usecase.TweetFindUseCase;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetAddRequest;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetEditRequest;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetFindRequest;
-import dev.simpleapp.twitter.user.tweet.web.model.TweetPageResponse;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -63,7 +63,7 @@ public class TweetController {
     }
 
     @GetMapping
-    public TweetPageResponse findOwnerTweets(
+    public PageResponse<TweetResponse> findOwnerTweets(
             @CurrentUser CurrentUserApiModel currentUserApiModel,
             @RequestParam("page") int page,
             @RequestParam("limit") int limit

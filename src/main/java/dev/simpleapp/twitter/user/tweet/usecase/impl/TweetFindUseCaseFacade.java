@@ -1,14 +1,16 @@
 package dev.simpleapp.twitter.user.tweet.usecase.impl;
 
+import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
-import dev.simpleapp.twitter.user.tweet.mapper.TweetPageToTweetPageResponseMapper;
+import dev.simpleapp.twitter.user.tweet.mapper.TweetToTweetResponseMapper;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
 import dev.simpleapp.twitter.user.tweet.usecase.TweetFindUseCase;
 import dev.simpleapp.twitter.user.tweet.web.model.TweetFindRequest;
-import dev.simpleapp.twitter.user.tweet.web.model.TweetPageResponse;
+import dev.simpleapp.twitter.user.tweet.web.model.TweetResponse;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,18 +26,18 @@ public class TweetFindUseCaseFacade implements TweetFindUseCase {
 
     private final CurrentUserProfileApiService currentUserProfileApiService;
     private final TweetService tweetService;
-    private final TweetPageToTweetPageResponseMapper tweetPageToTweetPageResponseMapper;
+    private final TweetToTweetResponseMapper tweetToTweetResponseMapper;
 
     public TweetFindUseCaseFacade(CurrentUserProfileApiService currentUserProfileApiService,
                                   TweetService tweetService,
-                                  TweetPageToTweetPageResponseMapper tweetPageToTweetPageResponseMapper) {
+                                  TweetToTweetResponseMapper tweetToTweetResponseMapper) {
         this.currentUserProfileApiService = currentUserProfileApiService;
         this.tweetService = tweetService;
-        this.tweetPageToTweetPageResponseMapper = tweetPageToTweetPageResponseMapper;
+        this.tweetToTweetResponseMapper = tweetToTweetResponseMapper;
     }
 
     @Override
-    public TweetPageResponse findTweets(TweetFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
+    public PageResponse<TweetResponse> findTweets(TweetFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
         UserProfile owner = this.currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Sort sort = Sort.by(Sort.Direction.DESC, CREATED_TIMESTAMP);
@@ -44,6 +46,11 @@ public class TweetFindUseCaseFacade implements TweetFindUseCase {
 
         Page<Tweet> pageableTweetResult = this.tweetService.findAllTweets(owner, pageable);
 
-        return this.tweetPageToTweetPageResponseMapper.map(pageableTweetResult);
+        List<TweetResponse> tweets = pageableTweetResult
+                .stream()
+                .map(this.tweetToTweetResponseMapper::map)
+                .toList();
+
+        return PageResponse.from(pageableTweetResult, tweets);
     }
 }

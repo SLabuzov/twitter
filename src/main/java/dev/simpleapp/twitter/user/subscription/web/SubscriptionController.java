@@ -1,12 +1,13 @@
 package dev.simpleapp.twitter.user.subscription.web;
 
+import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.annotation.CurrentUser;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionAddUseCase;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionDeleteUseCase;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionFindFollowerUseCase;
 import dev.simpleapp.twitter.user.subscription.web.model.FollowerFindRequest;
-import dev.simpleapp.twitter.user.subscription.web.model.FollowerPageResponse;
+import dev.simpleapp.twitter.user.subscription.web.model.FollowerResponse;
 import dev.simpleapp.twitter.user.subscription.web.model.SubscribeRequest;
 import dev.simpleapp.twitter.user.subscription.web.model.UnsubscribeRequest;
 import jakarta.validation.Valid;
@@ -46,9 +47,9 @@ public class SubscriptionController {
     }
 
     @GetMapping("/followers")
-    public FollowerPageResponse allFollowers(@CurrentUser CurrentUserApiModel currentUserApiModel,
-                                             @RequestParam("page") int page,
-                                             @RequestParam("limit") int limit) {
+    public PageResponse<FollowerResponse> allFollowers(@CurrentUser CurrentUserApiModel currentUserApiModel,
+                                                       @RequestParam("page") int page,
+                                                       @RequestParam("limit") int limit) {
         FollowerFindRequest findRequest = new FollowerFindRequest(page, limit);
         return this.subscriptionFindFollowerUseCase.findFollowers(findRequest, currentUserApiModel);
     }
