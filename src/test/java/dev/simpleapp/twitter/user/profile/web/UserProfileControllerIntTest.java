@@ -198,8 +198,8 @@ class UserProfileControllerIntTest {
                                 .param("name", "eduardo")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userProfiles").isArray())
-                .andExpect(jsonPath("$.totalTweets").isNumber());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").isNumber());
     }
 
     @Test

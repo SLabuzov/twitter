@@ -197,10 +197,10 @@ class SubscriptionControllerIntTest {
                                 .param("limit", "25")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.followers").isArray())
-                .andExpect(jsonPath("$.totalFollowers").isNumber())
-                .andExpect(jsonPath("$.isFirstPage").isBoolean())
-                .andExpect(jsonPath("$.isLastPage").isBoolean());
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").isNumber())
+                .andExpect(jsonPath("$.isFirst").isBoolean())
+                .andExpect(jsonPath("$.isLast").isBoolean());
     }
 
     @Test
@@ -305,9 +305,9 @@ class SubscriptionControllerIntTest {
                                 .param("limit", "25")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalFollowers").value(1))
-                .andExpect(jsonPath("$.followers[0].followerNickname").value("alicia_krajcik"))
-                .andExpect(jsonPath("$.followers[0].followerId").value(targetId));
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].followerNickname").value("alicia_krajcik"))
+                .andExpect(jsonPath("$.content[0].followerId").value(targetId));
     }
 
     // -- helpers ----------------------------------------------------------

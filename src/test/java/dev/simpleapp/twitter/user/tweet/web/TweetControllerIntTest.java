@@ -119,9 +119,9 @@ class TweetControllerIntTest {
                                 .param("limit", "25")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tweets").isArray())
-                .andExpect(jsonPath("$.totalTweets").isNumber())
-                .andExpect(jsonPath("$.isFirstPage").value(true));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").isNumber())
+                .andExpect(jsonPath("$.isFirst").value(true));
     }
 
     // -- CRUD: delete -------------------------------------------------------
