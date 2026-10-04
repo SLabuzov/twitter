@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserProfileService {
-    void createUserProfile(UserProfile userProfile);
+    UserProfile createUserProfile(UserProfile userProfile);
 
     UserProfile findUserProfileByIdRequired(long userProfileId);
 
