@@ -8,8 +8,10 @@ import dev.simpleapp.twitter.user.profile.usecase.UserProfileRegisterUseCase;
 import dev.simpleapp.twitter.user.profile.usecase.model.UserProfileRegisterCommand;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional
 public class UserProfileRegisterUseCaseFacade implements UserProfileRegisterUseCase {
 
     private final UserProfileService userProfileService;

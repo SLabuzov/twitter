@@ -6,10 +6,12 @@ import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
+import dev.simpleapp.twitter.user.subscription.api.event.SubscriptionCreatedEvent;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionAddUseCase;
 import dev.simpleapp.twitter.user.subscription.web.model.SubscribeRequest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +23,18 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
     private final UserProfileApiService userProfileApiService;
     private final SubscriptionService subscriptionService;
     private final MessageProvider messageProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SubscriptionAddUseCaseFacade(CurrentUserProfileApiService currentUserProfileApiService,
                                         UserProfileApiService userProfileApiService,
                                         SubscriptionService subscriptionService,
-                                        MessageProvider messageProvider) {
+                                        MessageProvider messageProvider,
+                                        ApplicationEventPublisher eventPublisher) {
         this.currentUserProfileApiService = currentUserProfileApiService;
         this.userProfileApiService = userProfileApiService;
         this.subscriptionService = subscriptionService;
         this.messageProvider = messageProvider;
+        this.eventPublisher = eventPublisher;
     }
 
 
@@ -56,5 +61,10 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
         }
 
         this.subscriptionService.createSubscription(subscription);
+
+        eventPublisher.publishEvent(new SubscriptionCreatedEvent(
+                follower.getId(),
+                followed.getId()
+        ));
     }
 }

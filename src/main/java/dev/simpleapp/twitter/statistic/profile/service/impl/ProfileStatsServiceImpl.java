@@ -21,4 +21,27 @@ public class ProfileStatsServiceImpl implements ProfileStatsService {
             profileStatsRepository.save(stats);
         }
     }
+
+    @Override
+    public void onSubscribed(long followerId, long followedId) {
+        profileStatsRepository.incrementFollowersCount(followedId);
+        profileStatsRepository.incrementFollowingCount(followerId);
+    }
+
+    @Override
+    public void onUnsubscribed(long followerId, long followedId) {
+        profileStatsRepository.decrementFollowersCount(followedId);
+        profileStatsRepository.decrementFollowingCount(followerId);
+    }
+
+    @Override
+    public void onTweetAdded(long profileId) {
+        profileStatsRepository.incrementTweetsCount(profileId);
+    }
+
+    @Override
+    public void onTweetDeleted(long profileId) {
+        profileStatsRepository.decrementTweetsCount(profileId);
+    }
+
 }

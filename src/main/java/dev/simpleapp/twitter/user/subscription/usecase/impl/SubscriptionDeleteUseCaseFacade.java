@@ -6,10 +6,12 @@ import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
+import dev.simpleapp.twitter.user.subscription.api.event.SubscriptionDeletedEvent;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
 import dev.simpleapp.twitter.user.subscription.usecase.SubscriptionDeleteUseCase;
 import dev.simpleapp.twitter.user.subscription.web.model.UnsubscribeRequest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,15 +21,18 @@ public class SubscriptionDeleteUseCaseFacade implements SubscriptionDeleteUseCas
     private final UserProfileApiService userProfileApiService;
     private final SubscriptionService subscriptionService;
     private final MessageProvider messageProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SubscriptionDeleteUseCaseFacade(CurrentUserProfileApiService currentUserProfileApiService,
                                            UserProfileApiService userProfileApiService,
                                            SubscriptionService subscriptionService,
-                                           MessageProvider messageProvider) {
+                                           MessageProvider messageProvider,
+                                           ApplicationEventPublisher eventPublisher) {
         this.currentUserProfileApiService = currentUserProfileApiService;
         this.userProfileApiService = userProfileApiService;
         this.subscriptionService = subscriptionService;
         this.messageProvider = messageProvider;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -52,5 +57,10 @@ public class SubscriptionDeleteUseCaseFacade implements SubscriptionDeleteUseCas
             );
         }
         this.subscriptionService.deleteSubscription(subscription);
+
+        eventPublisher.publishEvent(new SubscriptionDeletedEvent(
+                follower.getId(),
+                followed.getId()
+        ));
     }
 }
