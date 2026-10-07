@@ -20,3 +20,9 @@ databaseChangeLog:
   - include:
       file: 0.0.1/changelog-alter-user_profiles-add-bio.sql
       relativeToChangelogFile: true
+  - include:
+      file: 0.0.1/changelog-create-twitter-profile_stats-table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: 0.0.1/changelog-create-twitter-tweet_stats-table.sql
+      relativeToChangelogFile: true

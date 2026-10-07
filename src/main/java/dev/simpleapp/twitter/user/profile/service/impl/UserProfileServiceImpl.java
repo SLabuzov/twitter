@@ -21,7 +21,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void createUserProfile(UserProfile userProfile) {
+    public UserProfile createUserProfile(UserProfile userProfile) {
         if (this.userProfileRepository.existsById(userProfile.getId())) {
             throw new TwitterException(
                     messageProvider.getMessage("error.profile.already.exists.by.id", userProfile.getId())
@@ -34,7 +34,7 @@ public class UserProfileServiceImpl implements UserProfileService {
             );
         }
 
-        this.userProfileRepository.save(userProfile);
+        return this.userProfileRepository.save(userProfile);
     }
 
     @Override
