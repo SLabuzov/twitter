@@ -2,8 +2,8 @@ package dev.simpleapp.twitter.user.subscription.usecase.impl;
 
 import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
+import dev.simpleapp.twitter.user.profile.api.model.ProfileApi;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.subscription.model.FollowerSubscription;
 import dev.simpleapp.twitter.user.subscription.model.Subscription_;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
@@ -32,7 +32,7 @@ public class SubscriptionFindFollowerUseCaseFacade implements SubscriptionFindFo
     @Override
     public PageResponse<FollowerResponse> findFollowers(FollowerFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
 
-        UserProfile author = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
+        ProfileApi author = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Pageable pageable = PageRequest
                 .of(
@@ -45,16 +45,14 @@ public class SubscriptionFindFollowerUseCaseFacade implements SubscriptionFindFo
                 );
 
         Page<FollowerSubscription> subscriptions = subscriptionService
-                .findAllFollowerSubscriptions(author, pageable);
+                .findAllFollowerSubscriptions(author.profileId(), pageable);
 
         List<FollowerResponse> followers = subscriptions
                 .stream()
                 .map(item ->
                         new FollowerResponse(
                                 item.getId(),
-                                item.getFollower().getId(),
-                                item.getFollower().getNickname(),
-                                item.getFollower().getImageLink(),
+                                item.getFollowerId(),
                                 item.getCreatedTimestamp()
                         )
                 ).toList();

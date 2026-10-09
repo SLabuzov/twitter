@@ -4,7 +4,6 @@ import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.api.event.TweetDeletedEvent;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
@@ -34,25 +33,25 @@ public class TweetDeleteUseCaseFacade implements TweetDeleteUseCase {
 
     @Override
     public void deleteTweet(long tweetId, CurrentUserApiModel currentUserApiModel) {
-        UserProfile actor = this.currentUserProfileApiService
+        var actor = this.currentUserProfileApiService
                 .currentUserProfile(currentUserApiModel);
 
-        UserProfile owner = this.tweetService
+        long ownerId = this.tweetService
                 .findTweetById(tweetId)
-                .map(Tweet::getUserProfile)
+                .map(Tweet::getUserProfileId)
                 .orElseThrow(() -> new TwitterException(
                         messageProvider.getMessage("error.tweet.not.found", tweetId)
                 ));
 
-        if (!actor.equals(owner)) {
+        if (actor.profileId() != ownerId) {
             throw new TwitterException(
-                    messageProvider.getMessage("error.tweet.delete.forbidden", tweetId, actor.getNickname())
+                    messageProvider.getMessage("error.tweet.delete.forbidden", tweetId, actor.nickname())
             );
         }
 
         eventPublisher.publishEvent(new TweetDeletedEvent(
                 tweetId,
-                owner.getId()
+                ownerId
         ));
 
         this.tweetService.deleteTweet(tweetId);

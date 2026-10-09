@@ -3,9 +3,9 @@ package dev.simpleapp.twitter.user.subscription.usecase.impl;
 import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
+import dev.simpleapp.twitter.user.profile.api.model.ProfileApi;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.subscription.api.event.SubscriptionCreatedEvent;
 import dev.simpleapp.twitter.user.subscription.model.Subscription;
 import dev.simpleapp.twitter.user.subscription.service.SubscriptionService;
@@ -40,10 +40,10 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
 
     @Override
     public void subscribe(SubscribeRequest subscribeRequest, CurrentUserApiModel currentUserApiModel) {
-        UserProfile follower = this.currentUserProfileApiService
+        ProfileApi follower = this.currentUserProfileApiService
                 .currentUserProfile(currentUserApiModel);
 
-        UserProfile followed = this.userProfileApiService
+        ProfileApi followed = this.userProfileApiService
                 .findUserProfileById(subscribeRequest.followedId());
 
         if (follower.equals(followed)) {
@@ -51,20 +51,20 @@ public class SubscriptionAddUseCaseFacade implements SubscriptionAddUseCase {
         }
 
         Subscription subscription = new Subscription();
-        subscription.setFollower(follower);
-        subscription.setFollowed(followed);
+        subscription.setFollowerId(follower.profileId());
+        subscription.setFollowedId(followed.profileId());
 
         if (this.subscriptionService.existsSubscription(subscription)) {
             throw new TwitterException(
-                    messageProvider.getMessage("error.subscription.already.exists", followed.getNickname())
+                    messageProvider.getMessage("error.subscription.already.exists", followed.nickname())
             );
         }
 
         this.subscriptionService.createSubscription(subscription);
 
         eventPublisher.publishEvent(new SubscriptionCreatedEvent(
-                follower.getId(),
-                followed.getId()
+                follower.profileId(),
+                followed.profileId()
         ));
     }
 }

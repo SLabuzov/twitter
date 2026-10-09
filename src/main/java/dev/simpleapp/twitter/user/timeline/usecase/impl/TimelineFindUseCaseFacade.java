@@ -2,8 +2,8 @@ package dev.simpleapp.twitter.user.timeline.usecase.impl;
 
 import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
+import dev.simpleapp.twitter.user.profile.api.model.ProfileApi;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.timeline.model.TimelineFeed;
 import dev.simpleapp.twitter.user.timeline.model.TimelineFeed_;
 import dev.simpleapp.twitter.user.timeline.service.TimelineFeedService;
@@ -36,10 +36,10 @@ public class TimelineFindUseCaseFacade implements TimelineFindUseCase {
         Sort sort = Sort.by(Sort.Direction.DESC, TimelineFeed_.CREATED_TIMESTAMP);
         Pageable pageable = PageRequest.of(findRequest.page(), findRequest.limit(), sort);
 
-        UserProfile follower = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
+        ProfileApi follower = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Page<TimelineFeed> feedSlice = timelineFeedService
-                .getReaderFeedSlice(follower.getId(), pageable);
+                .getReaderFeedSlice(follower.profileId(), pageable);
 
         List<TimelineResponse> feeds = feedSlice
                 .stream()

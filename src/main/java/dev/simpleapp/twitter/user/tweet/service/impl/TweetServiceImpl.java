@@ -1,6 +1,5 @@
 package dev.simpleapp.twitter.user.tweet.service.impl;
 
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.repository.TweetRepository;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
@@ -39,7 +38,7 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public Page<Tweet> findAllTweets(UserProfile owner, Pageable pageable) {
-        return this.tweetRepository.findAllByUserProfile(owner, pageable);
+    public Page<Tweet> findAllTweets(long ownerId, Pageable pageable) {
+        return this.tweetRepository.findAllByUserProfileId(ownerId, pageable);
     }
 }

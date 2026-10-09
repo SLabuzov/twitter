@@ -1,8 +1,8 @@
 package dev.simpleapp.twitter.user.profile.api.service;
 
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
+import dev.simpleapp.twitter.user.profile.api.model.ProfileApi;
 
 public interface CurrentUserProfileApiService {
-    UserProfile currentUserProfile(CurrentUserApiModel currentUserApiModel);
+    ProfileApi currentUserProfile(CurrentUserApiModel currentUserApiModel);
 }

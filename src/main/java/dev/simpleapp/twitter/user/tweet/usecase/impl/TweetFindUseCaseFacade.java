@@ -3,7 +3,6 @@ package dev.simpleapp.twitter.user.tweet.usecase.impl;
 import dev.simpleapp.twitter.common.dto.PageResponse;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.mapper.TweetToTweetResponseMapper;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
@@ -38,13 +37,13 @@ public class TweetFindUseCaseFacade implements TweetFindUseCase {
 
     @Override
     public PageResponse<TweetResponse> findTweets(TweetFindRequest findRequest, CurrentUserApiModel currentUserApiModel) {
-        UserProfile owner = this.currentUserProfileApiService.currentUserProfile(currentUserApiModel);
+        var owner = this.currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Sort sort = Sort.by(Sort.Direction.DESC, CREATED_TIMESTAMP);
 
         Pageable pageable = PageRequest.of(findRequest.page(), findRequest.limit(), sort);
 
-        Page<Tweet> pageableTweetResult = this.tweetService.findAllTweets(owner, pageable);
+        Page<Tweet> pageableTweetResult = this.tweetService.findAllTweets(owner.profileId(), pageable);
 
         List<TweetResponse> tweets = pageableTweetResult
                 .stream()
