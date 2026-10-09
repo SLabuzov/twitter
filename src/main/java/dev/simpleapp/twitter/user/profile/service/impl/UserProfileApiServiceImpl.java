@@ -1,5 +1,6 @@
 package dev.simpleapp.twitter.user.profile.service.impl;
 
+import dev.simpleapp.twitter.user.profile.api.model.ProfileApi;
 import dev.simpleapp.twitter.user.profile.api.service.UserProfileApiService;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.profile.service.UserProfileService;
@@ -15,7 +16,13 @@ public class UserProfileApiServiceImpl implements UserProfileApiService {
     }
 
     @Override
-    public UserProfile findUserProfileById(long userProfileId) {
-        return this.userProfileService.findUserProfileByIdRequired(userProfileId);
+    public ProfileApi findUserProfileById(long userProfileId) {
+        UserProfile profile = this.userProfileService
+                .findUserProfileByIdRequired(userProfileId);
+
+        return new ProfileApi(
+                profile.getId(),
+                profile.getNickname()
+        );
     }
 }

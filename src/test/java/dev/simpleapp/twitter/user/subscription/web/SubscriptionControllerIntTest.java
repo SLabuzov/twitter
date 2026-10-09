@@ -306,7 +306,6 @@ class SubscriptionControllerIntTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(1))
-                .andExpect(jsonPath("$.content[0].followerNickname").value("alicia_krajcik"))
                 .andExpect(jsonPath("$.content[0].followerId").value(targetId));
     }
 

@@ -1,7 +1,7 @@
 package dev.simpleapp.twitter.user.profile.api.service;
 
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
+import dev.simpleapp.twitter.user.profile.api.model.ProfileApi;
 
 public interface UserProfileApiService {
-    UserProfile findUserProfileById(long userProfileId);
+    ProfileApi findUserProfileById(long userProfileId);
 }

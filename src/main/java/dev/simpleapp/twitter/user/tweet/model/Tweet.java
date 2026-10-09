@@ -1,13 +1,11 @@
 package dev.simpleapp.twitter.user.tweet.model;
 
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.Getter;
@@ -36,6 +34,6 @@ public class Tweet {
     @Column(nullable = false)
     private Instant modifiedTimestamp;
 
-    @ManyToOne(optional = false)
-    private UserProfile userProfile;
+    @Column(name = "user_profile_id")
+    private long userProfileId;
 }

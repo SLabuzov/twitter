@@ -1,7 +1,6 @@
 package dev.simpleapp.twitter.user.profile.usecase.impl;
 
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
-import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
 import dev.simpleapp.twitter.user.profile.mapper.UserProfileToUserProfileResponseMapper;
 import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.profile.service.UserProfileService;
@@ -15,23 +14,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserProfileEditUseCaseFacade implements UserProfileEditUseCase {
 
-    private final CurrentUserProfileApiService currentUserProfileApiService;
     private final UserProfileService userProfileService;
     private final UserProfileToUserProfileResponseMapper mapper;
 
     public UserProfileEditUseCaseFacade(
-            CurrentUserProfileApiService currentUserProfileApiService,
             UserProfileService userProfileService,
             UserProfileToUserProfileResponseMapper mapper) {
-        this.currentUserProfileApiService = currentUserProfileApiService;
         this.userProfileService = userProfileService;
-
         this.mapper = mapper;
     }
 
     @Override
     public UserProfileResponse editUserProfile(UserProfileEditRequest editRequest, CurrentUserApiModel currentUserApiModel) {
-        UserProfile currentProfile = this.currentUserProfileApiService.currentUserProfile(currentUserApiModel);
+        UserProfile currentProfile = this.userProfileService
+                .findUserProfileByIdRequired(currentUserApiModel.userAccountId());
 
         if (!currentProfile.getNickname().equals(editRequest.nickname())) {
             currentProfile = this.userProfileService.updateNickname(currentProfile, editRequest.nickname());

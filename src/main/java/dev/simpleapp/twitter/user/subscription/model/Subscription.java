@@ -1,13 +1,11 @@
 package dev.simpleapp.twitter.user.subscription.model;
 
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.Getter;
@@ -25,11 +23,11 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private UserProfile follower;
+    @Column(name = "follower_id")
+    private long followerId;
 
-    @ManyToOne
-    private UserProfile followed;
+    @Column(name = "followed_id")
+    private long followedId;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

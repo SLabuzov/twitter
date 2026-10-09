@@ -4,7 +4,6 @@ import dev.simpleapp.twitter.common.exception.TwitterException;
 import dev.simpleapp.twitter.common.i18n.MessageProvider;
 import dev.simpleapp.twitter.security.api.model.CurrentUserApiModel;
 import dev.simpleapp.twitter.user.profile.api.service.CurrentUserProfileApiService;
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import dev.simpleapp.twitter.user.tweet.mapper.TweetToTweetResponseMapper;
 import dev.simpleapp.twitter.user.tweet.model.Tweet;
 import dev.simpleapp.twitter.user.tweet.service.TweetService;
@@ -35,7 +34,7 @@ public class TweetEditUseCaseImpl implements TweetEditUseCase {
 
     @Override
     public TweetResponse editTweet(TweetEditRequest editRequest, CurrentUserApiModel currentUserApiModel) {
-        UserProfile actor = this.currentUserProfileApiService
+        var actor = this.currentUserProfileApiService
                 .currentUserProfile(currentUserApiModel);
 
         Tweet currentTweet = this.tweetService
@@ -44,11 +43,11 @@ public class TweetEditUseCaseImpl implements TweetEditUseCase {
                         messageProvider.getMessage("error.tweet.not.found", editRequest.id())
                 ));
 
-        UserProfile owner = currentTweet.getUserProfile();
+        long ownerId = currentTweet.getUserProfileId();
 
-        if (!actor.equals(owner)) {
+        if (actor.profileId() != (ownerId)) {
             throw new TwitterException(
-                    messageProvider.getMessage("error.tweet.edit.forbidden", editRequest.id(), actor.getNickname())
+                    messageProvider.getMessage("error.tweet.edit.forbidden", editRequest.id(), actor.nickname())
             );
         }
 

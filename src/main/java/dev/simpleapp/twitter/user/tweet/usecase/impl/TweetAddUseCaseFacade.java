@@ -37,14 +37,14 @@ public class TweetAddUseCaseFacade implements TweetAddUseCase {
         var owner = currentUserProfileApiService.currentUserProfile(currentUserApiModel);
 
         Tweet mappedTweet = new Tweet();
-        mappedTweet.setUserProfile(owner);
+        mappedTweet.setUserProfileId(owner.profileId());
         mappedTweet.setMessage(addRequest.message());
 
         Tweet createdTweet = this.tweetService.createTweet(mappedTweet);
 
         eventPublisher.publishEvent(new TweetCreatedEvent(
                 createdTweet.getId(),
-                owner.getId()
+                createdTweet.getUserProfileId()
         ));
 
         return this.tweetToTweetResponseMapper.map(createdTweet);

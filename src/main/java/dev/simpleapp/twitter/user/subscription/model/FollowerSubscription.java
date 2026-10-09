@@ -1,10 +1,11 @@
 package dev.simpleapp.twitter.user.subscription.model;
 
-import dev.simpleapp.twitter.user.profile.model.UserProfile;
 import java.time.Instant;
 
 public interface FollowerSubscription {
     long getId();
-    UserProfile getFollower();
+
+    long getFollowerId();
+
     Instant getCreatedTimestamp();
 }
